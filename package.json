@@ -1,0 +1,18 @@
+{
+  "name": "dslite-run-fw",
+  "version": "1.0.0",
+  "description": "lob for running firmware images on SimpleLink devices",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Jan Bölsche <jan@lagomorph.de> (https://regular.codes/)",
+  "license": "ISC",
+  "dependencies": {
+    "bl": "^6.0.2",
+    "dslite-client": "github:regular/dslite-client",
+    "dslite-proxy": "github:regular/dslite-proxy",
+    "loner": "^1.0.0",
+    "rc": "^1.2.8"
+  }
+}
