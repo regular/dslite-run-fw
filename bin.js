@@ -34,6 +34,9 @@ async function main() {
 main()
 
 function usage() {
-  console.log(`bin.js TARGET_CCXML FIRMWARE_IMAGE [--verbose]`)
+  console.log(`bin.js TARGET_CCXML FIRMWARE_IMAGE [--verbose] [--num-lines=N]
+
+  If N is given, the debug session is aborted after N lines from stdout were received.
+    `)
 }
 

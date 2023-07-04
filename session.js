@@ -30,12 +30,11 @@ module.exports = async function session(ds, target, program, opts) {
       throw new Errorr('Device did not enter expected target state: ' + err.message)
     })
 
-    console.log(opts)
     const stderr = process.stderr
     let stdout = process.stdout
     if (opts.numLines) {
       stdout = captureLines(resolve, opts)
-      //stdout.pipe(process.stdout)
+      stdout.pipe(process.stdout)
     }
 
     function output(type, message) {
@@ -83,7 +82,6 @@ function captureLines(done, opts) {
     } else {
       if (lines == undefined) return
       const line = BufferList(buff).toString('utf8')
-      console.log(`received line "${line}"`)
       lines.push(line)
       buff = []
       if (done && opts.numLines && lines.length >= opts.numLines) {
