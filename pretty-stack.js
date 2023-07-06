@@ -1,3 +1,5 @@
+const {resolve} = require('path')
+
 module.exports = function prettyStack(stack) {
   const {frames} = stack
   const l = frames.map(f=>{

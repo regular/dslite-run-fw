@@ -25,9 +25,9 @@ module.exports = async function session(ds, target, program, opts) {
 
     await core.waitForEvent({
       good: ({data, event}) => event == 'targetState.changed' && data.description == 'Suspended - H/W Breakpoint',
-      timeout: 6 * 1000,
+      timeout: 10 * 1000,
     }).catch(err=>{
-      throw new Errorr('Device did not enter expected target state: ' + err.message)
+      throw new Error('Device did not enter expected target state: ' + err.message)
     })
 
     const stderr = process.stderr
