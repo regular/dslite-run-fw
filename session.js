@@ -12,7 +12,8 @@ module.exports = async function session(ds, target, program, opts) {
     try {
       const {cores} = await ds.configure(target)
       const core = await ds.createSubModule(cores[0])
-      
+      debugCore('API %O', core)
+
       core.waitForEvent({
         good: debugCore
       })
@@ -35,7 +36,6 @@ module.exports = async function session(ds, target, program, opts) {
         if (!err) return resolve(lines)
         reject(err)
       }, opts)
-      stdout.pipe(process.stdout)
       const output = Output(stdout, process.stderr)
 
       const outputEvents = core.waitForEvent({
@@ -49,11 +49,21 @@ module.exports = async function session(ds, target, program, opts) {
         timeout: 6 * 1000,
       }).catch(reject)
 
+      const inputEvents = core.waitForEvent({
+        good: ({event}) => {
+          if (event == 'cio.input') {
+            core.cio.setInputText(opts.input)
+          }
+          return false // don't resolve the promise
+        }
+      }).catch(reject)
+
       core.targetState.run()
       await core.waitForEvent({
         good: ({data, event}) => event == 'targetState.changed' && data.description == 'Running',
         timeout: 6 * 1000,
       })
+
       const halted = core.waitForEvent({
         good: ({data, event}) => event == 'targetState.changed' && data.description == 'Suspended',
       })
@@ -76,11 +86,12 @@ function captureLines(opts, done) {
     if (!done) return
     if (data.length == 1 && data[0] == 0x04) {
       const exitReason = buff.pop().toString()
-      console.error('exit reason:', exitReason)
+      console.error('\nexit reason:', exitReason)
       const err = errorFromExitReason(exitReason, lines)
       done(err, lines)
       done = null
     } else if (data.length == 1 && data[0] == '\n'.charCodeAt(0)) { 
+      process.stdout.write(data)
       if (lines == undefined) return
       const line = BufferList(buff).toString('utf8')
       lines.push(line)
@@ -90,6 +101,7 @@ function captureLines(opts, done) {
         done = null
       }
     } else {
+      process.stdout.write(data)
       buff.push(data)
     }
   })

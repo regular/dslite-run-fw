@@ -18,7 +18,11 @@ async function main() {
     image = resolve(process.cwd(), image)
     const proxy = await startDSLite(proxyConfig, {log})
     try {
-      await runImage(ccxml, image, proxy.port, {log, numLines: argv['num-lines']})
+      await runImage(ccxml, image, proxy.port, {
+        log,
+        numLines: argv['num-lines'],
+        input: argv.input
+      })
     } catch(err) {
       console.error(err.stack)
       process.exitCode = 1
