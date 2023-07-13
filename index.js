@@ -13,10 +13,19 @@ async function runImage(ccxml, image, port, opts) {
   const {version} = await ds.getVersion()
   try {
     debug('running session ...')
-    await session(ds, ccxml, image, opts)
+    let retries = 30
+    let output = false
+    do try {
+      output = await session(ds, ccxml, image, opts)
+    } catch(e) {
+      console.error('Session quit unexpectedly.')
+      if (
+        !e.message.match(/An attempt to connect/m) &&
+        !e.message.match(/Error initializing emulator/m)
+      ) throw e
+      console.error(`Retrying to connect ... ${retries} retries left.`)
+    } while(--retries && output == false)
     debug('Session was a success!')
-  } catch(err) {
-    console.error(err.stack)
   } finally {
     ds.close()
   }
