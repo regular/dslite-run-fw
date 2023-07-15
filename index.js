@@ -11,10 +11,10 @@ module.exports = {
 async function runImage(ccxml, image, port, opts) {
   const ds = await client(port, Object.assign({}, opts, {promisify: true}))
   const {version} = await ds.getVersion()
+  let output = false
   try {
     debug('running session ...')
     let retries = 30
-    let output = false
     do try {
       output = await session(ds, ccxml, image, opts)
     } catch(e) {
@@ -29,6 +29,7 @@ async function runImage(ccxml, image, port, opts) {
   } finally {
     ds.close()
   }
+  return output == false ? undefined : output.join('\n')
 }
 
 function startDSLite(config, opts) {
